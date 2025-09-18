@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Music Genre Classification</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <!-- Added Google Fonts for better typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Added animated background elements -->
+    <div class="background-animation">
+        <div class="floating-note note-1">♪</div>
+        <div class="floating-note note-2">♫</div>
+        <div class="floating-note note-3">♪</div>
+        <div class="floating-note note-4">♫</div>
+        <div class="floating-note note-5">♪</div>
+    </div>
+
+    <!-- Wrapped content in container with slide-up animation -->
+    <div class="container">
+        <div class="header-section">
+            <div class="icon-wrapper">
+                <i class="fas fa-music pulse-icon"></i>
+            </div>
+            <h1>Music Genre Classification</h1>
+            <p class="description">Upload an audio file to classify its music genre using CNN and RNN models.</p>
+        </div>
+
+        <!-- Enhanced form with drag-and-drop styling -->
+        <form class="upload-form" action="{{ url_for('predict') }}" method="post" enctype="multipart/form-data">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <div class="upload-text">
+                    <h3>Drop your audio file here</h3>
+                    <p>or click to browse</p>
+                </div>
+                <label for="fileInput" style="display: none;">Audio File</label>
+                <input type="file" name="file" accept=".wav,.mp3,.flac,.ogg" required id="fileInput" />
+            </div>
+            <div class="file-info" id="fileInfo" style="display: none;">
+                <i class="fas fa-file-audio"></i>
+                <span id="fileName"></span>
+                <button type="button" class="remove-file" id="removeFile">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <button type="submit" class="submit-btn" id="submitBtn" disabled>
+                <span class="btn-text">Classify Genre</span>
+                <span class="btn-loading" style="display: none;">
+                    <i class="fas fa-spinner fa-spin"></i> Processing...
+                </span>
+            </button>
+        </form>
+
+        <!-- Enhanced error display -->
+        {% if error %}
+        <div class="alert error-alert slide-in">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>{{ error }}</span>
+        </div>
+        {% endif %}
+
+        <!-- Enhanced predictions display with confidence bars -->
+        {% if predictions %}
+        <div class="predictions slide-in">
+            <div class="predictions-header">
+                <i class="fas fa-chart-bar"></i>
+                <h3>Predictions for {{ filename }}</h3>
+            </div>
+            <div class="predictions-grid">
+                {% if predictions.cnn %}
+                <div class="prediction-card">
+                    <div class="model-header">
+                        <i class="fas fa-brain"></i>
+                        <span class="model-name">CNN Model</span>
+                    </div>
+                    {% if predictions.cnn.error %}
+                        <div class="prediction-error">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ predictions.cnn.error }}
+                        </div>
+                    {% else %}
+                        <div class="genre-result">{{ predictions.cnn.genre }}</div>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: {{ predictions.cnn.confidence }}%"></div>
+                        </div>
+                        <div class="confidence-text">{{ predictions.cnn.confidence }}% confidence</div>
+                    {% endif %}
+                </div>
+                {% endif %}
+                
+                {% if predictions.rnn %}
+                <div class="prediction-card">
+                    <div class="model-header">
+                        <i class="fas fa-project-diagram"></i>
+                        <span class="model-name">RNN Model</span>
+                    </div>
+                    {% if predictions.rnn.error %}
+                        <div class="prediction-error">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ predictions.rnn.error }}
+                        </div>
+                    {% else %}
+                        <div class="genre-result">{{ predictions.rnn.genre }}</div>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: {{ predictions.rnn.confidence }}%"></div>
+                        </div>
+                        <div class="confidence-text">{{ predictions.rnn.confidence }}% confidence</div>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Enhanced footer with supported formats -->
+        <div class="footer">
+            <div class="supported-formats">
+                <i class="fas fa-info-circle"></i>
+                <span>Supported formats: WAV, MP3, FLAC, OGG</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Added JavaScript for enhanced interactions -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
